@@ -1,0 +1,51 @@
+@font-face {
+  font-family: 'Locanita';
+  src: url('font/locanita/Locanita.otf') format('opentype'),
+       url('font/locanita/Locanita.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+body {
+  background: linear-gradient(to right top, #d16ba5, #5ffbf1);
+  background-size: 400% 400%;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: gradientMove 3.5s ease infinite;
+  font-family: 'Locanita';
+  font-size: 25px;
+}
+
+@keyframes gradientMove {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+input, input:hover, button {
+  border: none; 
+  border-radius: 5px; 
+  cursor: pointer; 
+}
+
+button {
+  background-color: #ffffff39; 
+  color: rgb(0, 0, 0); 
+  padding: 10px 20px; 
+  font-size: 20px;
+  font-family: 'Locanita';
+}
+
+button:hover {
+  background-color: #ffff; 
+}
+
