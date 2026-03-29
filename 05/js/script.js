@@ -1,49 +1,112 @@
-/*const fs = require('fs');
 
-const dados = {
-    nome: "João",
-    idade: 25,
-    cidade: "São Paulo"
-};
+document.addEventListener("DOMContentLoaded", () => {
+    const btnAdicionar = document.getElementById("BtnAdd");
+    const tabela = document.querySelector("table tbody");
+    const modalElement = document.getElementById("UserModal");
+    const modalUsuario = bootstrap.Modal.getOrCreateInstance(modalElement)
+    const modalTitulo = document.getElementById("ModalTitulo");
+    const usuarioForm = document.getElementById("UserForms");
+    
+    const modalIndex = document.getElementById("userID")
+    const inputNome = document.getElementById("ModalInputNome");
+    const inputEmail = document.getElementById("ModalInputEmail");
+    const inputTelefone = document.getElementById("ModalInputTelefone");
 
 
-const jsonString = JSON.stringify(dados, null, 2);
+    // abrir modal para adicionar usuario
+    btnAdicionar.addEventListener("click", ()=> {
+        modalTitulo.textContent = "Adicionar Usuário";
+        usuarioForm.reset();
+        modalIndex.value = "";
+        modalUsuario.show();
 
-function salvando(_dict){
-    fs.writeFile('./db.json', jsonString, (err) => {
-        if (err) console.error(err);
-        console.log('Arquivo JSON salvo.');
     });
-}*/
 
-const BtnAdd = document.getElementById("BtnAdd");
-const closeAdd = document.getElementById("closeAdd");
-const modalAdd = document.getElementById("modalAdd");
-const modalEdit = document.getElementById("modalEdit");
-const BtnEdit = document.getElementById("BtnEdit");
-const closeEdit = document.getElementById("closeEdit");
+    // salvar (adicionar ou editar)
+    usuarioForm.addEventListener("submit", (e) => {
+        e.preventDefault();
 
-const closeModal = (obj) => { obj.style.display = "none";}
+        const nome = inputNome.value.trim();
+        const email = inputEmail.value.trim();
+        const telefone = inputTelefone.value.trim();
 
-closeAdd.addEventListener("click", ()=>{closeModal(modalAdd)});
+        if (index === ""){
+            adicionarUsuario(nome, email, telefone);
+        } else {
+            atualizarUsuario(index, nome, email, telefone);
+        }
+        
+        modalUsuario.hide();
+    });
 
-closeEdit.addEventListener("click", ()=>{closeModal(modalEdit)});
 
-BtnAdd.addEventListener("click", (e) => {
-    //como a taga está -> <a href"#"> é para não recarrega/ir para o inicio do site
-    e.preventDefault(); 
-    modalAdd.style.display = "block";
+    // adcionar nova linha na tablea
+    function adicionarUsuario(nome, email, telefone){
+        const novaLinha = tabela.insertRow();
+        // conferir depois
+        const novoId = tabela.rows.length();
+
+        novaLinha.innerHTML = `
+        <th scope="row">${novoId}</th>
+        <td>${nome}</td>
+        <td>${email}</td>
+        <td>${telefone}</td>
+        <td>
+            <a href="#" class="btn btn-sm btn-primary btnEditar">Editar</a>
+            <a href="#" class="btn btn-sm btn-danger btnExcluir">Excluir</a>
+        </td>
+        `;
+    }
+
+    // atualizar linha
+    function atualizarUsuario(index, nome, email, telefone){
+        const linha = tabela.rows[index]
+
+        linha.cells[1].textContent = nome;
+        linha.cells[2].textContent = email;
+        linha.cells[3].textContent = telefone;
+
+    }
+
+    // eventos da tabela (editar // excluir)
+    tabela.addEventListener("click", (e) => {
+        // capturando a linha clicada
+        const linha = e.target.closest("tr");
+        
+        // se a linha existe, se nao encerra a função
+        if (!linha) return;
+
+        // descobre o indice da linha clicada
+        const index = Array.from(tabela.rows).indexOf(linha);
+
+        // editar
+        if (e.target.classList.contains("btn-editar")){
+            modalTitulo.textContent= "Editar usuário";
+
+            modalIndex.value = index;
+            inputNome.value = linha.cells[1].textContent;
+            inputEmail.value = linha.cells[2].textContent;
+            inputTelefone.value = linha.cells[3].textContent;
+            
+            modalUsuario.show();
+        }
+
+        // excluir
+        if (e.target.classList.contains("btn-excluir")) {
+            const confirmar = confirm("Tem certeza que deseja excluir este usuário?");
+            if (confirmar){
+                linha.remove();
+                atualizarIds();
+            }
+        }
+
+        // atualizar IDS
+        function atualizarIds(){
+            Array.from(tabela.rows).forEach((linha, i) => {
+                linha.cells[0].textContent = i + 1
+            });
+        }
+    });
+
+
 });
-
-BtnEdit.addEventListener("click", (e) =>{
-    e.preventDefault(); 
-    modalEdit.style.display = "block";
-})
-
-//quano o user clicar fora da tela
-window.addEventListener("click", function(e){
-    //se o modalAdd éstar aberto então a fecha
-    if(e.target === modalAdd){closeModal(modalAdd);}
-    if(e.target === modalEdit){closeModal(modalEdit);}
-});
-
